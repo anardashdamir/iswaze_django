@@ -1,0 +1,99 @@
+{% extends 'main.html' %}
+
+{% block content %}
+  <!-- Main Section -->
+  <main class="singleProject my-md">
+    <div class="container">
+      <div class="layout">
+        <div class="column column--1of3">
+          <h3 class="singleProject__subtitle">İstİfadə olunan alətlər</h3>
+
+          <div class="singleProject__toolStack">
+            {% for tag in tags  %}
+              <span class="tag tag--pill tag--sub tag--lg">
+                <small>{{tag}}</small>
+              </span>
+            {% endfor %}
+          </div>
+
+          {% if project.source_link %}
+            <a class="singleProject__liveLink" href="#" target="_blank"><i class="im im-external-link"></i>Mənbə link
+            </a>
+          {% endif %}
+
+          {% if project.demo_link %}
+            <a class="singleProject__liveLink" href="#" target="_blank"><i class="im im-external-link"></i>Demo link
+            </a>
+          {% endif %}
+
+        </div>
+        <div class="column column--2of3">
+          <img class="singleProject__preview" src="{{project.featured_image.url}}" alt="portfolio thumbnail" />
+          <p><a class="project__author" href="{% url 'user-profile' project.owner.id %}">{{project.owner.name}}</a></p>
+          <h2 class="singleProject__title">{{project.title}}</h2>
+
+          {% if project.uploaded_file %}
+          <p ><a style="color: red;" class="project__author" href="{{project.uploaded_file.url}}" download>Faylı yükləmək üçün klikləyin!</a></p>
+          {% endif %}
+         
+
+          <h3 class="singleProject__subtitle">Proyekt açıqlaması</h3>
+          <div class="singleProject__info">
+              {{project.description}}
+          </div>
+
+          <div class="comments">
+            <h3 class="singleProject__subtitle">Komentlər</h3>
+            <h5 class="project--rating">
+              {{project.vote_ratio}}% Pozitiv ({{project.vote_total}} Vote{{project.vote_total|pluralize:"s"}})
+            </h5>
+            {% if request.user.profile.id in project.reviewers %}
+              <p>Siz artıq dəyərləndirmisiz!</p>
+              
+            {% elif request.user.profile == project.owner %}
+            <p>Öz proyektinizə fikir bildirə bilməzsiniz</p>
+
+            {% elif request.user.is_authenticated %}
+            <form class="form" action="{% url 'project' project.id %}" method="POST">
+              {% csrf_token %}
+              {% for field in form %}
+              <div class="form__field">
+                <label for="formInput#textarea">{{field.label}}</label>
+                {{field}}
+              </div> 
+              {% endfor %}      
+              <input class="btn btn--sub btn--lg" type="submit" value="Təstiqlə" />
+            </form>
+            {% else %}
+              <a href="{% url 'login' %}?next{{request.path}}%">Öncə Daxil olun</a>                
+            {% endif %}
+
+ 
+            <div class="commentList">
+
+            {% for review in  project.review_set.all  %}
+              {% if review.body %}
+              
+                <div class="comment">
+                  <!-- <p><a class="project__author" href="{% url 'user-profile' review.owner.id %}">By {{project.owner.name}}</a></p> -->
+                    <img class="avatar avatar--md" src="{{review.owner.profile_image.url}}" alt="user" />
+               
+                  <div class="comment__details">
+                    <a href="{% url 'user-profile' review.owner.id %}" class="comment__author">{{review.owner.name}}</a>
+                    <p class="comment__info">{{review.body|linebreaksbr}}</p>
+                  </div>
+                </div>
+                
+              {% endif %}
+            {% endfor %}
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </main>
+
+{% endblock %}
+

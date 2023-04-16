@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <!-- Main Section -->
+    <main class="formPage my-xl">
+        <div class="content-box">
+            <div class="formWrapper">
+                <form class="form" action="" method="POST">
+                    {% csrf_token %}
+                    <p>"{{object}}" adlı proyekti silmək istədiyinizə əminsiz?</p>
+                    <a class="btn btn--sub btn--lg  my-md"  href="{{request.GET.next}}">Geri</a>
+
+                    <input class="btn btn--sub btn--lg  my-md" type="submit" value="Təstiqlə" />
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock content %}
